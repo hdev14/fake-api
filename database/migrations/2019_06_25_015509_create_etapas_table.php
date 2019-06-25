@@ -15,7 +15,9 @@ class CreateEtapasTable extends Migration
     {
         Schema::create('etapas', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->timestamps();
+            $table->float('nota', 3,2);
+            $table->integer('faltas');
+            
         });
     }
 

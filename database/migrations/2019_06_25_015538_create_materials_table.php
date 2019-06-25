@@ -15,7 +15,9 @@ class CreateMaterialsTable extends Migration
     {
         Schema::create('materials', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->timestamps();
+            $table->text('url');
+            $table->date('data_vinculacao');
+            $table->text('descricao');
         });
     }
 

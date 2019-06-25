@@ -15,6 +15,14 @@ class CreateUsuariosTable extends Migration
     {
         Schema::create('usuarios', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('matricula', 45);
+            $table->string('nome_usual', 45);
+            $table->text('url_foto');
+            $table->string('tipo_vinculo', 45);
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->rememberToken();
             $table->timestamps();
         });
     }

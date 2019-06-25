@@ -15,7 +15,15 @@ class CreateTurmasTable extends Migration
     {
         Schema::create('turmas', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->timestamps();
+            $table->string('sigla', 10);
+            $table->text('descricao');
+            $table->string('observacao', 100);
+            $table->enum('horarios_de_aula', ['2M12 / 3M56', '2M34 / 3M12']);
+            $table->integer('ano_letivo');
+            $table->integer('periodo_letivo');
+            $table->string('componente_curricular', 100);
+            $table->date('data_inicio');
+            $table->date('data_fim');
         });
     }
 

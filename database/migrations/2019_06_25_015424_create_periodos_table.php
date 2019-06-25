@@ -15,7 +15,9 @@ class CreatePeriodosTable extends Migration
     {
         Schema::create('periodos', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->timestamps();
+            $table->integer('ano_letivo');
+            $table->integer('periodo_letivo');
+            
         });
     }
 

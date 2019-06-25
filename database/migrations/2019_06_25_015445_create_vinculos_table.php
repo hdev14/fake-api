@@ -15,7 +15,15 @@ class CreateVinculosTable extends Migration
     {
         Schema::create('vinculos', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->timestamps();
+            $table->string('matricula', 45);
+            $table->string('nome', 45);
+            $table->string('curso', 45);
+            $table->string('campus', 45);
+            $table->string('situacao', 45);
+            $table->boolean('cota_sistec');
+            $table->boolean('cota_mec');
+            $table->string('situacao_sistemica', 100);
+            
         });
     }
 

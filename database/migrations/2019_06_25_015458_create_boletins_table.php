@@ -15,7 +15,17 @@ class CreateBoletinsTable extends Migration
     {
         Schema::create('boletins', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->timestamps();
+            $table->string('codigo_diario', 45);
+            $table->string('disciplina', 45);
+            $table->boolean('segundo_semestre');
+            $table->integer('carga_horaria');
+            $table->integer('carga_horaria_cumprida');
+            $table->float('media_disciplina', 8, 2);
+            $table->integer('numero_faltas');
+            $table->float('percentual_carga_horaria_frequencia', 8, 2);
+            $table->string('situacao', 45);
+            $table->integer('quantidade_avaliacoes');
+            $table->float('media_final_disciplina', 8, 2);
         });
     }
 

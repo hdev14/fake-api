@@ -15,7 +15,12 @@ class CreateAulasTable extends Migration
     {
         Schema::create('aulas', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->timestamps();
+            $table->integer('etapa');
+            $table->string('professor', 45);
+            $table->integer('quantidade');
+            $table->integer('faltas');
+            $table->text('conteudo');
+            $table->date('data');
         });
     }
 
