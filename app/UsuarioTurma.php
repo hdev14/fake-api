@@ -4,11 +4,15 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Material extends Model
+class UsuarioTurma extends Model
 {
-    //
+    
+    public function usuario() {
+    	return $this->belongsTo('App\Usuario');
+    }
+    
     public function turma() {
     	return $this->belongsTo('App\Turma');
     }
-  
+    
 }
