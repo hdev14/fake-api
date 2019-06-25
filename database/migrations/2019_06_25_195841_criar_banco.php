@@ -13,9 +13,9 @@ class CriarBanco extends Migration
      */
     public function up()
     {
-        Schema::create('vinculos', function (Blueprint $table) {
+        Schema::create('vinculo', function (Blueprint $table) {
             $table->bigIncrements('id')->autoIncrement();
-            $table->string('matriculaa', 45);
+            $table->string('matricula', 45);
             $table->string('nome', 45);
             $table->string('curso', 45);
             $table->string('campus', 45);
@@ -26,7 +26,7 @@ class CriarBanco extends Migration
             
         });
 
-        Schema::create('usuarios', function (Blueprint $table) {
+        Schema::create('usuario', function (Blueprint $table) {
             
             $table->bigIncrements('id')->autoIncrement();
             $table->unsignedInteger('vinculo_id')->nullable();
@@ -35,24 +35,21 @@ class CriarBanco extends Migration
             $table->text('url_foto');
             $table->string('tipo_vinculo', 45);
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
 
             $table->foreign('vinculo_id')
                     ->references('id')
-                    ->on('vinculos');
+                    ->on('vinculo')
+                    ->change();
         });
 
-        Schema::create('periodos', function (Blueprint $table) {
+        Schema::create('periodo', function (Blueprint $table) {
             $table->bigIncrements('id')->autoIncrement();
             $table->integer('ano_letivo');
             $table->integer('periodo_letivo');
             
         });
 
-        Schema::create('boletins', function (Blueprint $table) {
+        Schema::create('boletin', function (Blueprint $table) {
             
             $table->bigIncrements('id')->autoIncrement();
             $table->unsignedInteger('usuario_id');
@@ -70,10 +67,10 @@ class CriarBanco extends Migration
 
             $table->foreign('usuario_id')
                     ->references('id')
-                    ->on('usuarios');
+                    ->on('usuario');
         });
 
-        Schema::create('etapas', function (Blueprint $table) {
+        Schema::create('etapa', function (Blueprint $table) {
             
             $table->bigIncrements('id')->autoIncrement();
             $table->unsignedInteger('boletin_id');
@@ -82,11 +79,11 @@ class CriarBanco extends Migration
 
             $table->foreign('boletin_id')
                     ->references('id')
-                    ->on('boletins');
+                    ->on('boletin');
             
         });
 
-        Schema::create('turmas', function (Blueprint $table) {
+        Schema::create('turma', function (Blueprint $table) {
             $table->bigIncrements('id')->autoIncrement();
             $table->string('sigla', 10);
             $table->text('descricao');
@@ -99,7 +96,7 @@ class CriarBanco extends Migration
             $table->date('data_fim');
         });
 
-        Schema::create('materials', function (Blueprint $table) {
+        Schema::create('material', function (Blueprint $table) {
             
             $table->bigIncrements('id')->autoIncrement();
             $table->unsignedInteger('turma_id');
@@ -109,10 +106,10 @@ class CriarBanco extends Migration
 
             $table->foreign('turma_id')
                     ->references('id')
-                    ->on('turmas');
+                    ->on('turma');
         });
 
-        Schema::create('aulas', function (Blueprint $table) {
+        Schema::create('aula', function (Blueprint $table) {
             $table->bigIncrements('id')->autoIncrement();
             $table->unsignedInteger('turma_id');
             $table->integer('etapa');
@@ -124,62 +121,66 @@ class CriarBanco extends Migration
 
             $table->foreign('turma_id')
                     ->references('id')
-                    ->on('turmas');
+                    ->on('turma');
         });
 
-        Schema::create('locals', function (Blueprint $table) {
+        Schema::create('local', function (Blueprint $table) {
             $table->bigIncrements('id')->autoIncrement();
             $table->string('local', 100);
         });
 
-        Schema::create('usuario_turmas', function (Blueprint $table) {
+        Schema::create('usuario_turma', function (Blueprint $table) {
             
             $table->unsignedInteger('usuario_id');
             $table->unsignedInteger('turma_id');
+
             $table->boolean('professor');
-
-            $table->foreign('usuario_id')
-                    ->references('id')
-                    ->on('usuarios');
-            $table->foreign('turma_id')
-                    ->references('id')
-                    ->on('turmas');
-                    
-            $table->primary(['usario_id', 'turma_id']);
-
         });
 
-        Schema::create('usuario_periodos', function (Blueprint $table) {
+        Schema::table('usuario_turma', function (Blueprint $table) {
+            $table->primary(['usario_id', 'turma_id']);
+            $table->foreign('usuario_id')->references('id')->on('usuario');
+            $table->foreign('turma_id')->references('id')->on('turma');
+        });
+
+        Schema::create('usuario_periodo', function (Blueprint $table) {
             
             $table->unsignedInteger('usuario_id');
             $table->unsignedInteger('periodo_id');
 
+        });
 
+        Schema::table('usuario_periodo', function (Blueprint $table) {
+
+            $table->primary(['usuario_id', 'periodo_id']);
+            
             $table->foreign('usuario_id')
                     ->references('id')
-                    ->on('usuarios');
+                    ->on('usuario');
 
             $table->foreign('periodo_id')
                     ->references('id')
-                    ->on('periodos');
-
-            $table->primary(['usuario_id', 'periodo_id']);
+                    ->on('periodo');
         });
 
-        Schema::create('turma_locals', function (Blueprint $table) {
+        Schema::create('turma_local', function (Blueprint $table) {
+            
             $table->unsignedInteger('turma_id');
             $table->unsignedInteger('local_id');
 
+        });
+
+        Schema::table('turma_local', function (Blueprint $table) {
+
+            $table->primary(['turma_id', 'local_id']);
 
             $table->foreign('turma_id')
                     ->references('id')
-                    ->on('turmas');
+                    ->on('turma');
 
             $table->foreign('local_id')
                     ->references('id')
-                    ->on('locals');
-            
-            $table->primary(['turma_id', 'local_id']);
+                    ->on('local');
         });
 
     }
@@ -192,5 +193,17 @@ class CriarBanco extends Migration
     public function down()
     {
         //
+        Schema::drop('vinculo');
+        Schema::drop('usuario');
+        Schema::drop('periodo');
+        Schema::drop('boletin');
+        Schema::drop('etapa');
+        Schema::drop('turma');
+        Schema::drop('material');
+        Schema::drop('aula');
+        Schema::drop('local');
+        Schema::drop('usuario_turma');
+        Schema::drop('usuario_periodo');
+        Schema::drop('turma_local');
     }
 }
