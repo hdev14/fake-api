@@ -73,9 +73,39 @@ class SuapApiController extends Controller
     }
 
     public function dados(Request $rq) {
+
+      $autorizacao = $rq->header('Authorization');
+      list($jwt, $token) = explode(' ', $autorizacao);
+
+      $usuario =  Usuario::where(['token' => $token])->first();
+
+      if(!$usuario) {
+        return response()->json([
+          'mensagem' => 'error'
+        ], 401);
+      }
+      
+      $vinculo = $usuario->vinculo;
+
     	return response()->json([
-    		'dados' => 'OK'
+    		'id' => $usuario->id,
+        'matricula' => $usuario->matricula,
+        'nome_usual' => $usuario->nome_usual,
+        'email' => $usuario->email,
+        'url_foto' => $usuario->url_foto,
+        'tipo_vinculo' => $usuario->tipo_vinculo,
+        'vinculo' => [
+          'matricula' => $vinculo->matricula,
+          'nome' => $vinculo->nome,
+          'curso' => $vinculo->curso,
+          'campus' => $vinculo->campus,
+          'situacao' => $vinculo->situacao,
+          'cota_sistec' => $vinculo->cota_sistec,
+          'cota_mec' => $vinculo->cota_mec,
+          'situacao_sistemica' => $vinculo->situacao_sistemica,
+        ],
     	], 200);
+
     }
 
     public function periodos(Request $rq) {
@@ -101,14 +131,11 @@ class SuapApiController extends Controller
           'periodo_letivo' => $up->periodo->periodo_letivo
         ]);
       }
-      
+
     	return response()->json([
     		$periodos,
     	], 200);
-    }
 
-    public static function getPeriodo($up) {
-      return $up->periodo;
     }
 
     // DEPOIS
