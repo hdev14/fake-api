@@ -6,9 +6,12 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 use App\Usuario;
 use App\UsuarioPeriodo;
+use App\UsuarioTurma;
+use App\TurmaLocal;
 
 class SuapApiController extends Controller
 {	
@@ -42,13 +45,11 @@ class SuapApiController extends Controller
 	    	], 400);
     	}
 
-        $token = Str::random(60);
-        
-        Auth::user()->forceFill([
-            'token' => $token,
-        ])->save();
-
-        // Adicionar o token na sessão.
+      $token = Str::random(60);
+      
+      Auth::user()->forceFill([
+          'token' => $token,
+      ])->save();
 
     	return response()->json([
     		'token' => $token
@@ -72,11 +73,8 @@ class SuapApiController extends Controller
     	], 200);
     }
 
-    public function dados(Request $rq) {
-
-      $autorizacao = $rq->header('Authorization');
-      list($jwt, $token) = explode(' ', $autorizacao);
-
+    public static function usuarioExist($token) {
+      
       $usuario =  Usuario::where(['token' => $token])->first();
 
       if(!$usuario) {
@@ -84,8 +82,24 @@ class SuapApiController extends Controller
           'mensagem' => 'error'
         ], 401);
       }
-      
+
+      return $usuario;
+    }
+    
+    public function dados(Request $rq) {
+
+      $autorizacao = $rq->header('Authorization');
+      list($jwt, $token) = explode(' ', $autorizacao);
+
+      $usuario = self::usuarioExist($token);
+
       $vinculo = $usuario->vinculo;
+
+      if (is_null($vinculo)) {
+        return response()->json([
+          'messagem' => 'error'
+        ], 400);
+      }
 
     	return response()->json([
     		'id' => $usuario->id,
@@ -105,7 +119,6 @@ class SuapApiController extends Controller
           'situacao_sistemica' => $vinculo->situacao_sistemica,
         ],
     	], 200);
-
     }
 
     public function periodos(Request $rq) {
@@ -113,13 +126,7 @@ class SuapApiController extends Controller
       $autorizacao = $rq->header('Authorization');
       list($jwt, $token) = explode(' ', $autorizacao);
 
-      $usuario =  Usuario::where(['token' => $token])->first();
-
-      if(!$usuario) {
-        return response()->json([
-          'mensagem' => 'error'
-        ], 401);
-      }
+      $usuario = self::usuarioExist($token);
 
       $usuario_periodo = UsuarioPeriodo::where(['usuario_id' => $usuario->id])->get();
       
@@ -146,10 +153,56 @@ class SuapApiController extends Controller
    	}
 
    	public function getTurmasVirtuais(Request $rq, $ano, $periodo) {
-   		return response()->json([
-    		'Turmas Virtuais' => 'OK'
+   		
+      $autorizacao = $rq->header('Authorization');
+      list($jwt, $token) = explode(' ', $autorizacao);
+
+      $usuario = self::usuarioExist($token);
+      
+      $usuario_turma = UsuarioTurma::where(['usuario_id' => $usuario->id])->get();
+
+      $turmas_ids = array();
+
+      foreach ($usuario_turma as $ut) {
+        array_push($turmas_ids, $ut->turma_id);
+      }
+
+      $turmas = DB::table('turma')
+                ->where(['ano_letivo', '=', $ano], ['periodo_letivo', '=', $periodo])
+                ->whereIn('id', $turmas_ids)
+                ->get();
+                
+
+      $turmas_virtuais = array();
+
+      foreach ($turmas as $turma) {
+        array_push($turmas_virtuais, [
+          'id' => $turma->id,
+          'sigla' => $turma->sigla,
+          'descricao' => $turma->descricao,
+          'observacao' => $turma->observacao,
+          'locais_de_aula' => self::getLocais($turma->id),
+          'horarios_de_aula' => $turma->horarios_de_aula
+        ]);
+      }
+
+      return response()->json([
+    		$turmas_virtuais,
     	], 200);
    	}
+
+    protected static function getLocais($turma_id) {
+
+      $turma_local = TurmaLocal::where([ 'turma_id' => $turma_id ])->get();
+
+      $locais = array();
+
+      foreach ($turma_local as $tl) {
+        array_push($locais, $tl->local->local);
+      }
+
+      return $locais;
+    }
 
    	public function getTurmaVirtual(Request $rq, $id) {
    		return response()->json([

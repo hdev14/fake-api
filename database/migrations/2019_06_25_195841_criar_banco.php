@@ -95,12 +95,13 @@ class CriarBanco extends Migration
             $table->string('sigla', 10);
             $table->text('descricao');
             $table->string('observacao', 100);
-            $table->enum('horarios_de_aula', ['2M12 / 3M56', '2M34 / 3M12']);
+            $table->enum('horarios_de_aula', ['2M12 / 3M56', '2M34 / 3M12'])
+                    ->default('2M12 / 3M56');
             $table->integer('ano_letivo');
             $table->integer('periodo_letivo');
             $table->string('componente_curricular', 200);
-            $table->date('data_inicio')->useCurrent();
-            $table->date('data_fim');
+            $table->date('data_inicio')->nullable();
+            $table->date('data_fim')->nullable();
         });
 
         Schema::create('material', function (Blueprint $table) {
