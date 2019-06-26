@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 use App\Usuario;
+use App\UsuarioPeriodo;
 
 class SuapApiController extends Controller
 {	
@@ -78,11 +79,39 @@ class SuapApiController extends Controller
     }
 
     public function periodos(Request $rq) {
+
+      $autorizacao = $rq->header('Authorization');
+      list($jwt, $token) = explode(' ', $autorizacao);
+
+      $usuario =  Usuario::where(['token' => $token])->first();
+
+      if(!$usuario) {
+        return response()->json([
+          'mensagem' => 'error'
+        ], 401);
+      }
+
+      $usuario_periodo = UsuarioPeriodo::where(['usuario_id' => $usuario->id])->get();
+      
+      $periodos = array();
+
+      foreach ($usuario_periodo as $up) {
+        array_push($periodos, [
+          'ano_letivo' => $up->periodo->ano_letivo, 
+          'periodo_letivo' => $up->periodo->periodo_letivo
+        ]);
+      }
+      
     	return response()->json([
-    		'periodos' => 'OK'
+    		$periodos,
     	], 200);
     }
 
+    public static function getPeriodo($up) {
+      return $up->periodo;
+    }
+
+    // DEPOIS
    	public function boletin(Request $rq, $ano, $periodo) {
    		return response()->json([
     		'boletin' => 'OK'
@@ -98,19 +127,6 @@ class SuapApiController extends Controller
    	public function getTurmaVirtual(Request $rq, $id) {
    		return response()->json([
     		'Turma Virtual' => 'OK'
-    	], 200);
-   	}
-
-   	public function criarUsuario(Request $rq) {
-   		
-   		$dados = $rq->json()->all();
-   		
-   		$usuario = new Usuario($dados);
-   		$usuario->senha = Hash::make($usuario->senha);
-   		$usuario->save();
-
-   		return response()->json([
-    		'mensagem' => 'OK'
     	], 200);
    	}
 }

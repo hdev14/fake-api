@@ -32,4 +32,4 @@ Route::get('minhas-informacoes/boletim/{ano}/{periodo}/', 'SuapApiController@bol
 Route::get('minhas-informacoes/turmas-virtuais/{ano}/{periodo}/', 'SuapApiController@getTurmasVirtuais');
 
 Route::get('minhas-informacoes/turmas-virtuais/{id}/', 'SuapApiController@getTurmaVirtual');
-Route::get('criar/', 'SuapApiController@criarUsuario');
+Route::get('criar/', 'UsuarioController@criarUsuario');
