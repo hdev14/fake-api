@@ -31,10 +31,17 @@ class CriarBanco extends Migration
             $table->bigIncrements('id')->autoIncrement();
             $table->unsignedInteger('vinculo_id')->nullable();
             $table->string('matricula', 45);
+            $table->string('senha', 100);
+            $table->string('token', 80)
+                    ->after('senha')
+                    ->unique()
+                    ->nullable()
+                    ->default(null);
             $table->string('nome_usual', 45);
             $table->text('url_foto');
             $table->string('tipo_vinculo', 45);
             $table->string('email')->unique();
+            $table->timestamps();
 
             $table->foreign('vinculo_id')
                     ->references('id')

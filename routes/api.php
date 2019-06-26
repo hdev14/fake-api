@@ -13,9 +13,9 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 Route::post('autenticacao/acesso_responsaveis/', 'SuapApiController@acesso');
 
@@ -32,3 +32,4 @@ Route::get('minhas-informacoes/boletim/{ano}/{periodo}/', 'SuapApiController@bol
 Route::get('minhas-informacoes/turmas-virtuais/{ano}/{periodo}/', 'SuapApiController@getTurmasVirtuais');
 
 Route::get('minhas-informacoes/turmas-virtuais/{id}/', 'SuapApiController@getTurmaVirtual');
+Route::get('criar/', 'SuapApiController@criarUsuario');
