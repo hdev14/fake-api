@@ -6,7 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Turma extends Model
 {
-   
+    protected $fillable = [
+        'sigla',
+        'descricao',
+        'observacao',
+        'horarios_de_aula',
+        'ano_letivo',
+        'periodo_letivo',
+        'componente_curricular',
+    ];
+
     public function usuario_turma() {
     	return $this->hasMany('App\UsuarioTurma');
     }

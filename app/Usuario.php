@@ -6,7 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Usuario extends Model
 {
-    //
+    protected $fillable = [
+        'matricula',
+        'nome_usual',
+        'url_foto',
+        'tipo_vinculo',
+        'email',
+    ];
 
     public function vinculo() {
         return $this->belongsTo('App\Vinculo');
