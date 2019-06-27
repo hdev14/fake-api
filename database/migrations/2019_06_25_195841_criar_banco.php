@@ -125,7 +125,7 @@ class CriarBanco extends Migration
             $table->integer('quantidade');
             $table->integer('faltas');
             $table->text('conteudo');
-            $table->date('data')->useCurrent();
+            $table->date('data')->nullable();
 
             $table->foreign('turma_id')
                     ->references('id')

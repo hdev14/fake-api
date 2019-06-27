@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 
 use App\Usuario;
+use App\Material;
+use App\Aula;
+use App\Turma;
 use App\UsuarioPeriodo;
 use App\UsuarioTurma;
 use App\TurmaLocal;
@@ -54,6 +57,7 @@ class SuapApiController extends Controller
     	return response()->json([
     		'token' => $token
     	], 200);
+      
     }
 
     public function verificarToken(Request $rq) {
@@ -163,15 +167,13 @@ class SuapApiController extends Controller
 
       $turmas_ids = array();
 
-      foreach ($usuario_turma as $ut) {
+      foreach ($usuario_turma as $ut) {        
         array_push($turmas_ids, $ut->turma_id);
       }
 
       $turmas = DB::table('turma')
-                ->where(['ano_letivo', '=', $ano], ['periodo_letivo', '=', $periodo])
-                ->whereIn('id', $turmas_ids)
-                ->get();
-                
+                ->whereRaw('id IN (?) AND ano_letivo = '
+                    .$ano." AND periodo_letivo = ". $periodo, [ $turmas_ids ])->get();
 
       $turmas_virtuais = array();
 
@@ -181,14 +183,49 @@ class SuapApiController extends Controller
           'sigla' => $turma->sigla,
           'descricao' => $turma->descricao,
           'observacao' => $turma->observacao,
+          'professores' => self::getProfessores($turma->id),
           'locais_de_aula' => self::getLocais($turma->id),
-          'horarios_de_aula' => $turma->horarios_de_aula
+          'horarios_de_aula' => $turma->horarios_de_aula,
         ]);
+
+        ;
       }
 
       return response()->json([
     		$turmas_virtuais,
     	], 200);
+
+   	}
+
+   	public function getTurmaVirtual(Request $rq, $turma_id) {
+   		
+      $autorizacao = $rq->header('Authorization');
+      list($jwt, $token) = explode(' ', $autorizacao);
+
+      $usuario = self::usuarioExist($token);
+      
+      $usuario_turma = UsuarioTurma::where(['usuario_id' => $usuario->id, 'turma_id' => $turma_id])->first();
+
+      $turma = Turma::find($usuario_turma->turma_id);
+
+      $turma_virtual = array([
+        'id' => $turma->id,
+        'sigla' => $turma->sigla,
+        'descricao' => $turma->descricao,
+        'observacao' => $turma->observacao,
+        'professores' => self::getProfessores($turma->id),
+        'locais_de_aula' => self::getLocais($turma->id),
+        'horarios_de_aula' => $turma->horarios_de_aula,
+        'data_inicio' => $turma->data_inicio,
+        'data_fim' => $turma->data_fim,
+        'participantes' => self::getParticipantes($turma->id),
+        'aulas' => self::getAulas($turma->id),
+        'materiais_de_aula' => self::getMateriais($turma->id),
+      ]);
+
+      return response()->json([
+        $turma_virtual,
+      ], 200);
    	}
 
     protected static function getLocais($turma_id) {
@@ -204,9 +241,94 @@ class SuapApiController extends Controller
       return $locais;
     }
 
-   	public function getTurmaVirtual(Request $rq, $id) {
-   		return response()->json([
-    		'Turma Virtual' => 'OK'
-    	], 200);
-   	}
+    protected static function getProfessores($turma_id) {
+
+      $usuario_turma = UsuarioTurma::whereRaw('turma_id = '. $turma_id .' AND professor = 1')->get();
+
+      $professores_ids = array();
+
+      foreach ($usuario_turma as $ut) {
+        array_push($professores_ids, $ut->usuario_id);
+      }
+
+      $professores =  Usuario::whereRaw('id IN (?)',[$professores_ids])->get();
+
+      $professores_turma = array();
+
+      foreach ($professores as $p) {
+        array_push($professores_turma,[
+          'matricula' => $p->matricula,
+          'foto' => $p->url_foto,
+          'email' => $p->email,
+          'nome' => $p->nome_usual,
+        ]);
+      }
+
+      return $professores_turma;
+    }
+
+    protected static function getParticipantes($turma_id) {
+
+      $usuario_turma = UsuarioTurma::whereRaw('turma_id = '. $turma_id .' AND NOT professor = 1')->get();
+
+      $participantes_ids = array();
+
+      foreach ($usuario_turma as $ut) {
+        array_push($participantes_ids, $ut->usuario_id);
+      }
+
+      $participantes =  Usuario::whereRaw('id IN (?)',[$participantes_ids])->get();
+
+      $participantes_turma = array();
+
+      foreach ($participantes as $p) {
+        array_push($participantes_turma,[
+          'matricula' => $p->matricula,
+          'foto' => $p->url_foto,
+          'email' => $p->email,
+          'nome' => $p->nome_usual,
+        ]);
+      }
+
+      return $participantes_turma;
+    }
+
+    protected static function getMateriais($turma_id) {
+      
+      $materiais =  Material::where(['turma_id' => $turma_id])->get();
+      
+      $materiais_turma = array();
+
+      foreach ($materiais as $m) {
+        array_push($materiais_turma, [
+          'url' => $m->url,
+          'data_vinculacao' => $m->data_vinculacao,
+          'descricao' => $m->descricao,
+        ]);
+      }
+
+      return $materiais_turma;
+
+    }
+
+    protected static function getAulas($turma_id) {
+      
+      $aulas =  Aula::where(['turma_id' => $turma_id])->get();
+      
+      $aulas_turma = array();
+
+      foreach ($aulas as $a) {
+        array_push($aulas_turma, [
+          'etapa' => $a->etapa,
+          'professor' => $a->professor,
+          'quantidade' => $a->quantidade,
+          'faltas' => $a->faltas,
+          'conteudo' => $a->conteudo,
+          'data' => $a->data,
+        ]);
+      }
+
+      return $aulas_turma;
+
+    }
 }
