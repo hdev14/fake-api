@@ -1,6 +1,6 @@
 ## Fake Api
 
-### Serviços do SUAP API v2
+### Serviços da SUAP API v2
 
 1. Acesso tanto para aluno, como também para responśaveis.
 
