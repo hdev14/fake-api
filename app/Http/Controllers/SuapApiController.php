@@ -67,7 +67,6 @@ class SuapApiController extends Controller
 
       $dados = $rq->json()->all();
 
-<<<<<<< HEAD
     	$usuario = Usuario::where('token', $dados['token'])->first();
 
       if (is_null($usuario)) {
@@ -80,17 +79,7 @@ class SuapApiController extends Controller
     	return response()->json([
     		'token' => $usuario->token
     	], 200);
-
-=======
-    	// Verificar se o token na sessão e se igual a do usuário.
-
-      $usuario = Usuario::where('token', $dados['token'])->first();
-
-      return response()->json([
-        'verifica' => 'OK'
-      ], 200);
-
->>>>>>> 40c134798d5f6c885af59564b36e67de80d798d4
+      
     }
 
     public static function usuarioExist($token) {
