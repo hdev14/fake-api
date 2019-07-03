@@ -173,7 +173,7 @@ class SuapApiController extends Controller
       $turmas_ids = array();
 
       foreach ($usuario_turma as $ut) {        
-      array_push($turmas_ids, $ut->turma_id);
+        array_push($turmas_ids, $ut->turma_id);
       }
 
       $turmas = DB::table('turma')
