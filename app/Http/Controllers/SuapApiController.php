@@ -148,9 +148,7 @@ class SuapApiController extends Controller
         ]);
       }
 
-      return response()->json([
-        $periodos,
-      ], 200);
+      return response()->json($periodos, 200);
 
     }
 
@@ -194,9 +192,7 @@ class SuapApiController extends Controller
         ]);
       }
 
-      return response()->json([
-        $turmas_virtuais,
-      ], 200);
+      return response()->json($turmas_virtuais, 200);
 
    	}
 
@@ -226,9 +222,7 @@ class SuapApiController extends Controller
         'materiais_de_aula' => self::getMateriais($turma->id),
       ]);
 
-      return response()->json([
-        $turma_virtual,
-      ], 200);
+      return response()->json($turma_virtual, 200);
    	}
 
     protected static function getLocais($turma_id) {
@@ -251,7 +245,7 @@ class SuapApiController extends Controller
       $professores_ids = array();
 
       foreach ($usuario_turma as $ut) {
-      array_push($professores_ids, $ut->usuario_id);
+        array_push($professores_ids, $ut->usuario_id);
       }
 
       $professores =  Usuario::whereRaw('id IN (?)',[$professores_ids])->get();
