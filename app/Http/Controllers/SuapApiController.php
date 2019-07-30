@@ -17,12 +17,12 @@ use App\UsuarioTurma;
 use App\TurmaLocal;
 
 class SuapApiController extends Controller
-{	
+{
 
     public function acesso(Request $rq) {
-    	
+
       // {
-      // 	'matricula': matricula, 
+      // 	'matricula': matricula,
       // 	'chave': senha
       // }
 
@@ -33,9 +33,9 @@ class SuapApiController extends Controller
     }
 
     public function token(Request $rq) {
-    	
+
     	// {
-    	// 	'username': matricula, 
+    	// 	'username': matricula,
     	// 	'password': senha
     	// }
 
@@ -48,7 +48,7 @@ class SuapApiController extends Controller
     	}
 
       $token = Str::random(60);
-      
+
       Auth::user()->forceFill([
         'token' => $token,
       ])->save();
@@ -56,11 +56,11 @@ class SuapApiController extends Controller
       return response()->json([
         'token' => $token
       ], 200);
-      
+
     }
 
     public function verificarToken(Request $rq) {
-    	
+
     	// {
     	// 	'token': token
     	// }
@@ -79,11 +79,11 @@ class SuapApiController extends Controller
     	return response()->json([
     		'token' => $usuario->token
     	], 200);
-      
+
     }
 
     public static function usuarioExist($token) {
-      
+
       $usuario =  Usuario::where(['token' => $token])->first();
 
       if(!$usuario) {
@@ -94,7 +94,7 @@ class SuapApiController extends Controller
 
       return $usuario;
     }
-    
+
     public function dados(Request $rq) {
 
       $autorizacao = $rq->header('Authorization');
@@ -143,7 +143,7 @@ class SuapApiController extends Controller
 
       foreach ($usuario_periodo as $up) {
         array_push($periodos, [
-          'ano_letivo' => $up->periodo->ano_letivo, 
+          'ano_letivo' => $up->periodo->ano_letivo,
           'periodo_letivo' => $up->periodo->periodo_letivo
         ]);
       }
@@ -160,7 +160,7 @@ class SuapApiController extends Controller
    	}
 
    	public function getTurmasVirtuais(Request $rq, $ano, $periodo) {
-   		
+
       $autorizacao = $rq->header('Authorization');
       list($jwt, $token) = explode(' ', $autorizacao);
 
@@ -170,7 +170,7 @@ class SuapApiController extends Controller
 
       $turmas_ids = array();
 
-      foreach ($usuario_turma as $ut) {        
+      foreach ($usuario_turma as $ut) {
         array_push($turmas_ids, $ut->turma_id);
       }
 
@@ -192,12 +192,14 @@ class SuapApiController extends Controller
         ]);
       }
 
-      return response()->json($turmas_virtuais, 200);
+      return response()->json([
+          "dados" => $turmas_virtuais
+      ], 200);
 
    	}
 
    	public function getTurmaVirtual(Request $rq, $turma_id) {
-   		
+
       $autorizacao = $rq->header('Authorization');
       list($jwt, $token) = explode(' ', $autorizacao);
 
@@ -222,7 +224,9 @@ class SuapApiController extends Controller
         'materiais_de_aula' => self::getMateriais($turma->id),
       ]);
 
-      return response()->json($turma_virtual, 200);
+      return response()->json([
+          "dados" => $turma_virtual
+      ], 200);
    	}
 
     protected static function getLocais($turma_id) {
@@ -291,7 +295,7 @@ class SuapApiController extends Controller
     }
 
     protected static function getMateriais($turma_id) {
-      
+
       $materiais =  Material::where(['turma_id' => $turma_id])->get();
 
       $materiais_turma = array();
@@ -309,7 +313,7 @@ class SuapApiController extends Controller
     }
 
     protected static function getAulas($turma_id) {
-      
+
       $aulas =  Aula::where(['turma_id' => $turma_id])->get();
 
       $aulas_turma = array();
