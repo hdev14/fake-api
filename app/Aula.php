@@ -6,19 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class Aula extends Model
 {
-    
     protected $table = 'aula';
 
     protected $fillable = [
-    	'etapa',
-    	'professor',
-    	'quantidade',
-    	'faltas',
-    	'conteudo',
-    	'data',
+        'etapa',
+        'professor',
+        'quantidade',
+        'faltas',
+        'conteudo',
+        'data'
     ];
 
-    public function turma() {
-    	return $this->belongsTo('App\Turma');
+    public function turma()
+    {
+        return $this->belongsTo('App\Turma');
     }
 }

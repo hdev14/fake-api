@@ -5,22 +5,22 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 
 class Vinculo extends Model
-{   
+{
     protected $table = 'vinculo';
 
     protected $fillable = [
-    	'matricula',
-    	'nome',
-    	'curso',
-    	'campus',
-    	'situacao',
-    	'cota_sistec',
-    	'cota_mec',
-    	'situacao_sistemica',
+        'matricula',
+        'nome',
+        'curso',
+        'campus',
+        'situacao',
+        'cota_sistec',
+        'cota_mec',
+        'situacao_sistemica'
     ];
 
-    public function usuario() {
-    	return $this->hasOne('App\Usuario');
+    public function usuario()
+    {
+        return $this->hasOne('App\Usuario');
     }
-    
 }

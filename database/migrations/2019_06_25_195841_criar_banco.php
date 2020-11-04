@@ -23,20 +23,18 @@ class CriarBanco extends Migration
             $table->boolean('cota_sistec');
             $table->boolean('cota_mec');
             $table->string('situacao_sistemica', 100);
-            
         });
 
         Schema::create('usuario', function (Blueprint $table) {
-            
             $table->bigIncrements('id')->autoIncrement();
             $table->unsignedInteger('vinculo_id')->nullable();
             $table->string('matricula', 45);
             $table->string('senha', 100);
             $table->string('token', 80)
-                    ->after('senha')
-                    ->unique()
-                    ->nullable()
-                    ->default(null);
+                ->after('senha')
+                ->unique()
+                ->nullable()
+                ->default(null);
             $table->string('nome_usual', 45);
             $table->text('url_foto');
             $table->string('tipo_vinculo', 45);
@@ -44,20 +42,18 @@ class CriarBanco extends Migration
             $table->timestamps();
 
             $table->foreign('vinculo_id')
-                    ->references('id')
-                    ->on('vinculo')
-                    ->change();
+                ->references('id')
+                ->on('vinculo')
+                ->change();
         });
 
         Schema::create('periodo', function (Blueprint $table) {
             $table->bigIncrements('id')->autoIncrement();
             $table->integer('ano_letivo');
             $table->integer('periodo_letivo');
-            
         });
 
         Schema::create('boletin', function (Blueprint $table) {
-            
             $table->bigIncrements('id')->autoIncrement();
             $table->unsignedInteger('usuario_id');
             $table->string('codigo_diario', 45);
@@ -73,21 +69,19 @@ class CriarBanco extends Migration
             $table->float('media_final_disciplina', 8, 2);
 
             $table->foreign('usuario_id')
-                    ->references('id')
-                    ->on('usuario');
+                ->references('id')
+                ->on('usuario');
         });
 
         Schema::create('etapa', function (Blueprint $table) {
-            
             $table->bigIncrements('id')->autoIncrement();
             $table->unsignedInteger('boletin_id');
             $table->float('nota', 3, 2);
             $table->integer('faltas');
 
             $table->foreign('boletin_id')
-                    ->references('id')
-                    ->on('boletin');
-            
+                ->references('id')
+                ->on('boletin');
         });
 
         Schema::create('turma', function (Blueprint $table) {
@@ -96,7 +90,7 @@ class CriarBanco extends Migration
             $table->text('descricao');
             $table->string('observacao', 100);
             $table->enum('horarios_de_aula', ['2M12 / 3M56', '2M34 / 3M12'])
-                    ->default('2M12 / 3M56');
+                ->default('2M12 / 3M56');
             $table->integer('ano_letivo');
             $table->integer('periodo_letivo');
             $table->string('componente_curricular', 200);
@@ -105,7 +99,6 @@ class CriarBanco extends Migration
         });
 
         Schema::create('material', function (Blueprint $table) {
-            
             $table->bigIncrements('id')->autoIncrement();
             $table->unsignedInteger('turma_id');
             $table->text('url');
@@ -113,8 +106,8 @@ class CriarBanco extends Migration
             $table->text('descricao');
 
             $table->foreign('turma_id')
-                    ->references('id')
-                    ->on('turma');
+                ->references('id')
+                ->on('turma');
         });
 
         Schema::create('aula', function (Blueprint $table) {
@@ -128,8 +121,8 @@ class CriarBanco extends Migration
             $table->date('data')->nullable();
 
             $table->foreign('turma_id')
-                    ->references('id')
-                    ->on('turma');
+                ->references('id')
+                ->on('turma');
         });
 
         Schema::create('local', function (Blueprint $table) {
@@ -138,10 +131,8 @@ class CriarBanco extends Migration
         });
 
         Schema::create('usuario_turma', function (Blueprint $table) {
-            
             $table->unsignedInteger('usuario_id');
             $table->unsignedInteger('turma_id');
-
             $table->boolean('professor');
         });
 
@@ -152,45 +143,38 @@ class CriarBanco extends Migration
         });
 
         Schema::create('usuario_periodo', function (Blueprint $table) {
-            
             $table->unsignedInteger('usuario_id');
             $table->unsignedInteger('periodo_id');
-
         });
 
         Schema::table('usuario_periodo', function (Blueprint $table) {
-
             $table->primary(['usuario_id', 'periodo_id']);
-            
+
             $table->foreign('usuario_id')
-                    ->references('id')
-                    ->on('usuario');
+                ->references('id')
+                ->on('usuario');
 
             $table->foreign('periodo_id')
-                    ->references('id')
-                    ->on('periodo');
+                ->references('id')
+                ->on('periodo');
         });
 
         Schema::create('turma_local', function (Blueprint $table) {
-            
             $table->unsignedInteger('turma_id');
             $table->unsignedInteger('local_id');
-
         });
 
         Schema::table('turma_local', function (Blueprint $table) {
-
             $table->primary(['turma_id', 'local_id']);
 
             $table->foreign('turma_id')
-                    ->references('id')
-                    ->on('turma');
+                ->references('id')
+                ->on('turma');
 
             $table->foreign('local_id')
-                    ->references('id')
-                    ->on('local');
+                ->references('id')
+                ->on('local');
         });
-
     }
 
     /**
@@ -200,7 +184,6 @@ class CriarBanco extends Migration
      */
     public function down()
     {
-        //
         Schema::drop('vinculo');
         Schema::drop('usuario');
         Schema::drop('periodo');

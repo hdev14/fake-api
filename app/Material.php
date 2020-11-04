@@ -5,16 +5,16 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 
 class Material extends Model
-{	
-	protected $table = 'material';
+{
+    protected $table = 'material';
 
     protected $fillable = [
-    	'url',
-    	'descricao',
+        'url',
+        'descricao'
     ];
 
-    public function turma() {
-    	return $this->belongsTo('App\Turma');
+    public function turma()
+    {
+        return $this->belongsTo('App\Turma');
     }
-  
 }
